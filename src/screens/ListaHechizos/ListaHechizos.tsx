@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, FlatList, Alert, TouchableOpacity, RefreshControl } from "react-native";
+import { View, Text, Button, FlatList, Alert, TouchableOpacity, RefreshControl, ImageBackground } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import { styles } from "./ListaHechizos.styles";
 import ItemHechizo from "../../components/ItemHechizo";
+import { crearCarpeta, obtenerPergaminos } from "../../services/HechizosServices";
 
 const CARPETA_PERGAMINOS = `${FileSystem.documentDirectory}pergaminos/`;
 
@@ -14,28 +15,10 @@ export default function ListaHechizos() {
 
   useEffect(() => {
     crearCarpeta();
-    obtenerPergaminos();
+    obtenerPergaminos(setRefreshing, setPergaminos);
   }, []);
 
-  const crearCarpeta = async () => {
-    const carpetaInfo = await FileSystem.getInfoAsync(CARPETA_PERGAMINOS);
-    if (!carpetaInfo.exists) {
-      await FileSystem.makeDirectoryAsync(CARPETA_PERGAMINOS, { intermediates: true });
-    }
-  };
 
-  const obtenerPergaminos = async () => {
-    try {
-      setRefreshing(true);
-      const archivos = await FileSystem.readDirectoryAsync(CARPETA_PERGAMINOS);
-      setPergaminos(archivos);
-    } catch (error) {
-      Alert.alert("Error", "No se pudieron cargar los pergaminos.");
-      console.error("Error al obtener pergaminos:", error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   const subirPergamino = async () => {
     try {
@@ -46,7 +29,7 @@ export default function ListaHechizos() {
       const destino = `${CARPETA_PERGAMINOS}${name}`;
 
       await FileSystem.copyAsync({ from: uri, to: destino });
-      obtenerPergaminos();
+      obtenerPergaminos(setRefreshing, setPergaminos);
     } catch (error) {
       Alert.alert("Error", "No se pudo subir el pergamino.");
       console.error("Error al subir pergamino:", error);
@@ -57,7 +40,7 @@ export default function ListaHechizos() {
     try {
       const rutaArchivo = `${CARPETA_PERGAMINOS}${nombre}`;
       await FileSystem.deleteAsync(rutaArchivo);
-      obtenerPergaminos();
+      obtenerPergaminos(setRefreshing, setPergaminos);
     } catch (error) {
       Alert.alert("Error", "No se pudo eliminar el pergamino.");
       console.error("Error al eliminar pergamino:", error);
@@ -87,22 +70,27 @@ export default function ListaHechizos() {
   };
 
   return (
-    <View style={styles.container}>
-      <Button title="📥 Subir Pergamino" onPress={subirPergamino} />
-      
-      <FlatList
-        data={pergaminos}
-        keyExtractor={(item) => item}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={obtenerPergaminos} />
-        }
-        renderItem={({ item }) => {
-        console.log(item)
-        return   <ItemHechizo styles={styles} item={item} eliminarPergamino={eliminarPergamino}
-          descargarPergamino={descargarPergamino}/>
-        }}
-        style={styles.listContainer}
-      />
-    </View>
+    <ImageBackground
+    source={require('../../../assets/mago_aprendiz.png')}
+    style={styles.containerBackground}>
+      <View style={styles.container}>
+        <Button title="📥 Subir Pergamino" onPress={subirPergamino} />
+        
+        <FlatList
+          data={pergaminos}
+          keyExtractor={(item) => item}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={()=>obtenerPergaminos(setRefreshing, setPergaminos)} />
+          }
+          renderItem={({ item }) => {
+          console.log(item)
+          return   <ItemHechizo styles={styles} item={item} eliminarPergamino={eliminarPergamino}
+            descargarPergamino={descargarPergamino}/>
+          }}
+          style={styles.listContainer}
+        />
+      </View>      
+    </ImageBackground>
+
   );
 }

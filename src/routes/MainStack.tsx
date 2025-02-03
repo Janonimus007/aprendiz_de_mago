@@ -13,7 +13,7 @@ export default function StackNavigation() {
         <Stack.Screen
           name="ListaHechizos"
           component={ListaHechizos}
-          options={{ title: "Lista de Pergaminos" }}
+          options={{ title: "Lista de Pergaminos", headerShown:false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
