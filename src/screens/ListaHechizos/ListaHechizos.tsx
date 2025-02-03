@@ -4,6 +4,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import { styles } from "./ListaHechizos.styles";
+import ItemHechizo from "../../components/ItemHechizo";
 
 const CARPETA_PERGAMINOS = `${FileSystem.documentDirectory}pergaminos/`;
 
@@ -95,16 +96,11 @@ export default function ListaHechizos() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={obtenerPergaminos} />
         }
-        renderItem={({ item }) => (
-          <View style={styles.containerItem}>
-            <TouchableOpacity onPress={() => descargarPergamino(item)}>
-              <Text style={styles.textItem}>📜 {item}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => eliminarPergamino(item)}>
-              <Text style={styles.textDelete}>❌ Eliminar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        renderItem={({ item }) => {
+        console.log(item)
+        return   <ItemHechizo styles={styles} item={item} eliminarPergamino={eliminarPergamino}
+          descargarPergamino={descargarPergamino}/>
+        }}
         style={styles.listContainer}
       />
     </View>
