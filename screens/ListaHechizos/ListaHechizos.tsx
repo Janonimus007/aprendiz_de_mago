@@ -3,6 +3,7 @@ import { View, Text, Button, FlatList, Alert, TouchableOpacity, RefreshControl }
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
+import { styles } from "./ListaHechizos.styles";
 
 const CARPETA_PERGAMINOS = `${FileSystem.documentDirectory}pergaminos/`;
 
@@ -85,7 +86,7 @@ export default function ListaHechizos() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
+    <View style={styles.container}>
       <Button title="📥 Subir Pergamino" onPress={subirPergamino} />
       
       <FlatList
@@ -95,16 +96,16 @@ export default function ListaHechizos() {
           <RefreshControl refreshing={refreshing} onRefresh={obtenerPergaminos} />
         }
         renderItem={({ item }) => (
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 5 }}>
+          <View style={styles.containerItem}>
             <TouchableOpacity onPress={() => descargarPergamino(item)}>
-              <Text style={{ fontSize: 16 }}>📜 {item}</Text>
+              <Text style={styles.textItem}>📜 {item}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => eliminarPergamino(item)}>
-              <Text style={{ color: "red", fontWeight: "bold" }}>❌ Eliminar</Text>
+              <Text style={styles.textDelete}>❌ Eliminar</Text>
             </TouchableOpacity>
           </View>
         )}
-        style={{ marginTop: 10 }}
+        style={styles.listContainer}
       />
     </View>
   );
