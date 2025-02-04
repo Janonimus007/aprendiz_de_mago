@@ -9,9 +9,19 @@ export const crearCarpeta = async () => {
     }
   };
 
-export const obtenerPergaminos = async (setRefreshing: React.Dispatch<React.SetStateAction<boolean>>, setPergaminos: React.Dispatch<React.SetStateAction<string[]>>) => {
+  export const obtenerPergaminos = async (
+    setRefreshing: React.Dispatch<React.SetStateAction<boolean>>,
+    setPergaminos: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
     try {
       setRefreshing(true);
+  
+      const carpetaInfo = await FileSystem.getInfoAsync(CARPETA_PERGAMINOS);
+      if (!carpetaInfo.exists) {
+        setPergaminos([]); // Si no existe, devuelve una lista vacía
+        return;
+      }
+  
       const archivos = await FileSystem.readDirectoryAsync(CARPETA_PERGAMINOS);
       setPergaminos(archivos);
     } catch (error) {
